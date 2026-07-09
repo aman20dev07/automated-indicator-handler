@@ -37,8 +37,8 @@ jobs:
     # Step 5: Securely commit and push the newly generated LATEST_THREATS.md file
     - name: Commit and Push Changes
       run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "Aman Dev"
+        git config --global user.email "aman20dev05@gmail.com"
         git add LATEST_THREATS.md
         
         # Only commit if the threat vectors have actually changed to avoid empty log errors
