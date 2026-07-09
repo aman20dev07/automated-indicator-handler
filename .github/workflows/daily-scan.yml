@@ -1,0 +1,45 @@
+name: Daily Threat Intelligence Update
+
+on:
+  schedule:
+    # Runs automatically everyday at 00:00 UTC (5:30 AM IST)
+    - cron: '0 0 * * *'
+  # Allows you to manually trigger the pipeline anytime via the GitHub dashboard
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Grants the runner permission to commit code back to your repo
+
+    steps:
+    # Step 1: Clone the repository files into the temporary cloud runner
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Step 2: Set up a secure Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # Step 3: Install the required requests library
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    # Step 4: Execute the script to fetch new threat vectors
+    - name: Run Threat Scraper
+      run: python scraper.py
+
+    # Step 5: Securely commit and push the newly generated LATEST_THREATS.md file
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add LATEST_THREATS.md
+        
+        # Only commit if the threat vectors have actually changed to avoid empty log errors
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Automated Feed Update: $(date -u +'%Y-%m-%d %H:%M:%S') UTC" && git push)
