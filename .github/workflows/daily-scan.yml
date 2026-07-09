@@ -41,5 +41,9 @@ jobs:
         git config --global user.email "aman20dev05@gmail.com"
         git add LATEST_THREATS.md
         
-        # Only commit if the threat vectors have actually changed to avoid empty log errors
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Automated Feed Update: $(date -u +'%Y-%m-%d %H:%M:%S') UTC" && git push)
+       # Commit the changes locally first
+        git diff --quiet && git diff --staged --quiet || git commit -m "Automated Feed Update: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+        
+        # Pull any background changes to prevent collisions, then push
+        git pull --rebase origin main
+        git push
